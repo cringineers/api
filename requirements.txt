@@ -6,3 +6,4 @@ sqlalchemy~=1.4.22
 redis~=4.0.2
 aiohttp_jwt~=0.6.1
 aiohttp_pydantic~=1.12.1
+asyncpg~=0.25.0
