@@ -1,6 +1,7 @@
 -- DROP SCHEMA tag_system;
 
-CREATE SCHEMA tag_system AUTHORIZATION postgres;
+CREATE SCHEMA tag_system;
+-- AUTHORIZATION postgres;
 
 -- DROP SEQUENCE tag_system.newtable_id_seq;
 
