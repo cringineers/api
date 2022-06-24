@@ -19,21 +19,7 @@ CREATE SEQUENCE tag_system.tags_id_seq
 	MAXVALUE 2147483647
 	START 1
 	CACHE 1
-	NO CYCLE;-- tag_system.users definition
-
--- Drop table
-
--- DROP TABLE tag_system.users;
-
-CREATE TABLE tag_system.users (
-	id int4 NOT NULL,
-	login text NOT NULL,
-	hash text NOT NULL,
-	CONSTRAINT users_pk PRIMARY KEY (id)
-);
-
-
--- tag_system.object_types definition
+	NO CYCLE;-- tag_system.object_types definition
 
 -- Drop table
 
@@ -57,6 +43,19 @@ CREATE TABLE tag_system.tag_group (
 	"name" text NOT NULL,
 	"binary" bool NOT NULL,
 	CONSTRAINT tag_group_pk PRIMARY KEY (id)
+);
+
+
+-- tag_system.users definition
+
+-- Drop table
+
+-- DROP TABLE tag_system.users;
+
+CREATE TABLE tag_system.users (
+	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY,
+	login text NOT NULL,
+	hash text NOT NULL
 );
 
 
