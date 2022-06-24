@@ -1,7 +1,6 @@
 -- DROP SCHEMA tag_system;
 
 CREATE SCHEMA tag_system;
--- AUTHORIZATION postgres;
 
 -- DROP SEQUENCE tag_system.newtable_id_seq;
 
@@ -12,9 +11,54 @@ CREATE SEQUENCE tag_system.newtable_id_seq
 	START 1
 	CACHE 1
 	NO CYCLE;
+-- DROP SEQUENCE tag_system.object_types_id_seq;
+
+CREATE SEQUENCE tag_system.object_types_id_seq
+	INCREMENT BY 1
+	MINVALUE 1
+	MAXVALUE 2147483647
+	START 1
+	CACHE 1
+	NO CYCLE;
+-- DROP SEQUENCE tag_system.objects_id_seq;
+
+CREATE SEQUENCE tag_system.objects_id_seq
+	INCREMENT BY 1
+	MINVALUE 1
+	MAXVALUE 2147483647
+	START 1
+	CACHE 1
+	NO CYCLE;
+-- DROP SEQUENCE tag_system.tag_group_id_seq;
+
+CREATE SEQUENCE tag_system.tag_group_id_seq
+	INCREMENT BY 1
+	MINVALUE 1
+	MAXVALUE 2147483647
+	START 1
+	CACHE 1
+	NO CYCLE;
 -- DROP SEQUENCE tag_system.tags_id_seq;
 
 CREATE SEQUENCE tag_system.tags_id_seq
+	INCREMENT BY 1
+	MINVALUE 1
+	MAXVALUE 2147483647
+	START 1
+	CACHE 1
+	NO CYCLE;
+-- DROP SEQUENCE tag_system.tags_id_seq1;
+
+CREATE SEQUENCE tag_system.tags_id_seq1
+	INCREMENT BY 1
+	MINVALUE 1
+	MAXVALUE 2147483647
+	START 1
+	CACHE 1
+	NO CYCLE;
+-- DROP SEQUENCE tag_system.users_id_seq;
+
+CREATE SEQUENCE tag_system.users_id_seq
 	INCREMENT BY 1
 	MINVALUE 1
 	MAXVALUE 2147483647
