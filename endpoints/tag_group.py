@@ -5,7 +5,7 @@ from db.db_tag import get_tags_by_group
 
 
 class TagGroup(PydanticView):
-    async def post(self, method: str, group_id: int = None, name: str = None, text: str = None):
+    async def post(self, method: str, group_id: int = None, name: str = None, binary: bool = False):
         try:
             status = 200
             if method == "create":
