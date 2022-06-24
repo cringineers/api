@@ -150,3 +150,6 @@ CREATE TABLE tag_system.object_tags (
 	CONSTRAINT object_tags_fk_1 FOREIGN KEY (tag_id) REFERENCES tag_system.tags(id)
 );
 
+
+INSERT INTO tag_system.users (login, hash)
+VALUES ('cool_user', '$2b$12$vjUOaUTtj9QDmBnKZ3UO6O01tQnAYOnHnmo.u.xkWFdvLeonOcTv6')
