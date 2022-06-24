@@ -6,9 +6,6 @@ from aiohttp.web import run_app
 from core.app import create_app
 
 
-logging_level = logging.INFO
-
-
 async def main():
     app = await create_app()
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
