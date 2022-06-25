@@ -1,10 +1,11 @@
 import requests
 import json
 import db.minio as minio
+from typing import List
 from zlib import decompress
 from aiohttp import web
 from aiohttp_pydantic import PydanticView
-from db.db_image import insert_image, add_tags, get_image, get_image_tags, get_images_page, get_image_count, delete_image
+from db.db_image import *
 from db.db_tag_group import get_all
 
 
@@ -77,6 +78,28 @@ class Images(PydanticView):
                 })
             return web.json_response({"images": result, "count": count}, status=200)
         except Exception as err:
+            return web.json_response({"error": "Invalid token"}, status=400)
+
+
+class ImagesSearch(PydanticView):
+    async def get(self, /, page: int, size: int, tags: List[int]):
+        try:
+            image_ids = await get_images_search(self.request.app, tags)
+            count = len(image_ids)
+            image_ids = image_ids[page * size:(page + 1) * size]
+            images = await get_images_by_ids(self.request.app, image_ids)
+            result = []
+            for i_id, i_name, i_source in images:
+                tag_ids = await get_image_tags(self.request.app, i_id)
+                result.append({
+                    "id": i_id,
+                    "name": i_name,
+                    "source_path": i_source,
+                    "tags": [{"id": tag["tag_id"], "name": tag["name"]} for tag in tag_ids]
+                })
+            return web.json_response({"images": result, "count": count}, status=200)
+        except Exception as err:
+            raise err
             return web.json_response({"error": "Invalid token"}, status=400)
 
 

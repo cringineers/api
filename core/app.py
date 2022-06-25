@@ -1,6 +1,7 @@
 import os
 import logging
 import boto3
+import aiohttp_cors
 from botocore.client import Config
 from aiohttp.web import Application
 from dotenv import load_dotenv, find_dotenv

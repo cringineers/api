@@ -72,6 +72,34 @@ async def get_images_page(app: Application, page, size):
     return result.fetchall()
 
 
+# TODO: FIX PAGINATION
+async def get_images_search(app: Application, tags):
+    engine = app["db_engine"]
+    async with engine.connect() as connection:
+        query = text("""
+            SELECT distinct object_id
+            from tag_system.object_tags
+            where tag_id = any (:tags)
+            order by object_id
+        """)
+        result = await connection.execute(query, {"tags": tags})
+        await connection.commit()
+    return result.fetchall()
+
+
+async def get_images_by_ids(app: Application, ids):
+    engine = app["db_engine"]
+    async with engine.connect() as connection:
+        query = text("""
+            SELECT id, name, source_path
+            from tag_system.objects
+            where id = any (:ids)
+        """)
+        result = await connection.execute(query, {"ids": ids})
+        await connection.commit()
+    return result.fetchall()
+
+
 async def get_image_count(app: Application):
     engine = app["db_engine"]
     async with engine.connect() as connection:
