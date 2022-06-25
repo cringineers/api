@@ -13,6 +13,22 @@ async def get_tag(app: Application, tag_id):
     return tags
 
 
+async def insert_tag(app: Application, name, tag_text, latent_space, group_id, fake):
+    engine = app["db_engine"]
+    async with engine.connect() as connection:
+        query = text("""
+            insert into tag_system.tags(name, text, latent_space, group_id, is_fake) values(:name, :text, :ls, :gr, :f)
+            returning id
+        """)
+        result = await connection.execute(query, {"name": name,
+                                                "text": tag_text,
+                                                "ls": latent_space,
+                                                "gr": group_id,
+                                                "f": fake})
+        await connection.commit()
+    return result.fetchone()[0]
+
+
 async def get_tags_by_group(app: Application, group_id):
     engine = app["db_engine"]
     async with engine.connect() as connection:

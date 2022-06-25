@@ -1,22 +1,17 @@
 from aiohttp import web
 from aiohttp_pydantic import PydanticView
-from db.db_tag_group import *
+from db.db_tag_group import insert_tag_group, get_tag_group
 from db.db_tag import get_tags_by_group
 
 
 class TagGroup(PydanticView):
-    async def post(self, method: str, group_id: int = None, name: str = None, binary: bool = False):
+    async def post(self):
         try:
-            status = 200
-            if method == "create":
-                result_id, status = await create_tag_group(self.request.app, name, binary), 201
-            elif method == "update":
-                result_id = await update_tag_group(self.request.app, group_id, name)
-            elif method == "delete":
-                result_id = await delete_tag_group(self.request.app, group_id)
-            else:
-                return web.json_response({"Forbidden move": method}, status=status)
-            return web.json_response({"group_id": result_id}, status=400)
+            body = await self.request.json()
+            name = body["name"]
+            binary = body["binary"]
+            group_id = await insert_tag_group(self.request.app, name, binary)
+            return web.json_response({"group_id": group_id}, status=400)
         except Exception as err:
             return web.json_response({"Error": err}, status=500)
 

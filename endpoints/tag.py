@@ -1,4 +1,5 @@
-import logging
+import json
+import requests
 from typing import List, Dict
 from aiohttp import web
 from aiohttp_pydantic import PydanticView
@@ -6,24 +7,25 @@ from db.db_tag import *
 
 
 class Tag(PydanticView):
-    async def post(self, method: str, tag_id: int = None, name: str = None, tag_text: str = None, group_id: int = None):
+    async def post(self):
         try:
-            status = 200
-            # TODO: Add realization
-            if method == "create":
-                result_id = -1
-                pass
-            elif method == "update":
-                result_id = await update_tag(self.request.app, tag_id, name, tag_text)
-            elif method == "delete":
-                result_id = await delete_tag(self.request.app, tag_id)
-            else:
-                return web.json_response({"Forbidden move": method}, status=status)
-            return web.json_response({"group_id": result_id}, status=400)
+            body = await self.request.json()
+            name = body["name"]
+            text = body["text"]
+            group_id = body["group_id"]
+            binary = body["binary"]
+            space = requests.post(f"{self.request.app['worker_host']}/features_tag", json={"text": text}).json()["features"]
+            if binary:
+                alt_name = "No " + name
+                alt_text = "No " + text
+                alt_space = requests.post(f"{self.request.app['worker_host']}/features_tag", json={"text": alt_text}).json()["features"]
+                alt_tag = await insert_tag(self.request.app, alt_name, alt_text, json.dumps(alt_space), group_id, True)
+            tag_id = await insert_tag(self.request.app, name, text, json.dumps(space), group_id, False)
+            return web.json_response({"tag_id": tag_id}, status=200)
         except Exception as err:
             return web.json_response({"Error": err}, status=500)
 
-    async def get(self, tag_id: int):
+    async def get(self, /, tag_id: int):
         try:
             tag = await get_tag(self.request.app, tag_id)
             return web.json_response({
