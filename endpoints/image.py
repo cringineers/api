@@ -1,10 +1,10 @@
 import requests
 import json
 import jwt
+import db.minio as minio
 from aiohttp import web
 from aiohttp_pydantic import PydanticView
-from db.minio import upload_image
-from db.db_image import insert_image, add_tags, get_image, get_image_tags, get_images_page, get_image_count
+from db.db_image import insert_image, add_tags, get_image, get_image_tags, get_images_page, get_image_count, delete_image
 from db.db_tag_group import get_all
 
 
@@ -19,7 +19,7 @@ class Image(PydanticView):
             '''
             image = await self.request.read()
             prediction = requests.post(f"{self.request.app['worker_host']}/features_image", data=image).json()["features"]
-            upload_image(self.request.app, image, name, content_type)
+            minio.upload_image(self.request.app, image, name, content_type)
             image_id = await insert_image(self.request.app, name, prediction)
             groups = await get_all(self.request.app)
             groups_json = {}
@@ -81,4 +81,16 @@ class Images(PydanticView):
                 })
             return web.json_response({"images": result, "count": count}, status=200)
         except Exception as err:
+            return web.json_response({"error": "Invalid token"}, status=400)
+
+
+class ImageDeleter(PydanticView):
+    async def post(self, /, image_id: int):
+        try:
+            image = await get_image(self.request.app, image_id)
+            minio.delete_image(self.request.app, image["source_path"])
+            await delete_image(self.request.app, image_id)
+            return web.json_response({"status": "Done"}, status=200)
+        except Exception as err:
+            raise err
             return web.json_response({"error": "Invalid token"}, status=400)

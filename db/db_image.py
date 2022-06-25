@@ -82,3 +82,13 @@ async def get_image_count(app: Application):
         result = await connection.execute(query)
         await connection.commit()
     return result.fetchone()[0]
+
+
+async def delete_image(app: Application, image_id):
+    engine = app["db_engine"]
+    async with engine.connect() as connection:
+        query = text("""
+            delete from tag_system.objects where id = :id
+        """)
+        result = await connection.execute(query, {"id": image_id})
+        await connection.commit()

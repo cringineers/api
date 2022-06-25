@@ -35,5 +35,6 @@ async def create_app():
         verify=False,
         region_name="ru-msk-1"
     )
-    app["minio_bucket"] = app["minio"].Bucket(os.environ.get("MINIO_BUCKET"))
+    app["minio_bucket_name"] = os.environ.get("MINIO_BUCKET")
+    app["minio_bucket"] = app["minio"].Bucket(app["minio_bucket_name"])
     return app
