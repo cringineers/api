@@ -99,7 +99,6 @@ class ImagesSearch(PydanticView):
                 })
             return web.json_response({"images": result, "count": count}, status=200)
         except Exception as err:
-            raise err
             return web.json_response({"error": "Invalid token"}, status=400)
 
 

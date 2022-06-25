@@ -1,8 +1,7 @@
 import os
 import logging
 import boto3
-import aiohttp_cors
-from botocore.client import Config
+from aiohttp_middlewares import cors_middleware
 from aiohttp.web import Application
 from dotenv import load_dotenv, find_dotenv
 from sqlalchemy.ext.asyncio import create_async_engine
@@ -14,7 +13,11 @@ async def create_app():
         logging.warning("Cant find .env file.")
     load_dotenv()
 
-    app = Application()
+    app = Application(middlewares=[
+        cors_middleware(
+            allow_all=True
+        ),
+    ])
     app = setup_routes(app)
     connection_string = f"postgresql+asyncpg://" \
                         f"{os.environ.get('DB_USER')}:%s" % os.environ.get('DB_PASSWORD') + \
@@ -25,6 +28,7 @@ async def create_app():
         max_overflow=int(os.environ.get('POOL_OVERFLOW')),
         pool_recycle=int(os.environ.get('POOL_RECYCLE'))
     )
+
     app["jwt_key"] = os.environ.get('JWT_KEY')
     app["jwt_alg"] = os.environ.get('JWT_ALG')
     app["worker_host"] = os.environ.get('WORKER_HOST')
