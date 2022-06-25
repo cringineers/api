@@ -82,11 +82,27 @@ class Images(PydanticView):
 
 
 class ImagesSearch(PydanticView):
-    async def get(self, /, page: int, size: int, tags: List[int]):
+    async def get(self, /, page: int, size: int, tags: List[int], type: str = "any"):
         try:
-            image_ids = await get_images_search(self.request.app, tags)
-            count = len(image_ids)
-            image_ids = image_ids[page * size:(page + 1) * size]
+            if type == "any":
+                image_ids = await get_images_search(self.request.app, tags)
+                count = len(image_ids)
+                image_ids = image_ids[page * size:(page + 1) * size]
+            else:
+                data = await get_images_search_all(self.request.app, tags)
+                resource = {}
+                for i_id, t_id in data:
+                    if i_id in resource.keys():
+                        resource[i_id].add(t_id)
+                    else:
+                        resource[i_id] = {t_id}
+                result_ids = []
+                tags = set(tags)
+                for i_id, tag_ids in resource.items():
+                    if len(tags.intersection(tag_ids)) == len(tags):
+                        result_ids.append(i_id)
+                count = len(result_ids)
+                image_ids = result_ids[page * size:(page + 1) * size]
             images = await get_images_by_ids(self.request.app, image_ids)
             result = []
             for i_id, i_name, i_source in images:
@@ -98,6 +114,7 @@ class ImagesSearch(PydanticView):
                     "tags": [{"id": tag["tag_id"], "name": tag["name"]} for tag in tag_ids]
                 })
             return web.json_response({"images": result, "count": count}, status=200)
+
         except Exception as err:
             return web.json_response({"error": "Invalid token"}, status=400)
 

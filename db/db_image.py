@@ -87,6 +87,19 @@ async def get_images_search(app: Application, tags):
     return result.fetchall()
 
 
+async def get_images_search_all(app: Application, tags):
+    engine = app["db_engine"]
+    async with engine.connect() as connection:
+        query = text("""
+            SELECT distinct object_id, tag_id
+            from tag_system.object_tags
+            where tag_id = any (:tags)
+            order by object_id
+        """)
+        result = await connection.execute(query, {"tags": tags})
+        await connection.commit()
+    return result.fetchall()
+
 async def get_images_by_ids(app: Application, ids):
     engine = app["db_engine"]
     async with engine.connect() as connection:
