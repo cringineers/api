@@ -52,20 +52,6 @@ async def create_tag(app: Application, name, tag_text, latent_space, group_id):
     return result.inserted_primary_key
 
 
-async def update_tag(app: Application, tag_id, name, tag_text):
-    engine = app["db_engine"]
-    async with engine.connect() as connection:
-        query = text("""
-            update tag_system.tag 
-            set name = :name
-                text = :text
-            where id = :id
-        """)
-        await connection.execute(query, {"name": name, "text": tag_text, "id": tag_id})
-        await connection.commit()
-    return tag_id
-
-
 async def delete_tag(app: Application, tag_id):
     engine = app["db_engine"]
     async with engine.connect() as connection:
@@ -74,4 +60,3 @@ async def delete_tag(app: Application, tag_id):
         """)
         await connection.execute(query, {"id": tag_id})
         await connection.commit()
-    return tag_id

@@ -4,7 +4,7 @@ import jwt
 from aiohttp import web
 from aiohttp_pydantic import PydanticView
 from db.minio import upload_image
-from db.db_image import insert_image, add_tags
+from db.db_image import insert_image, add_tags, get_image, get_image_tags, get_images_page, get_image_count
 from db.db_tag_group import get_all
 
 
@@ -49,5 +49,36 @@ class Image(PydanticView):
             return web.json_response({"error": "Invalid token"}, status=401)
 
     # Refresh tokens
-    async def get(self):
-        pass
+    async def get(self, /, image_id: int):
+        try:
+            image = await get_image(self.request.app, image_id)
+            if image is not None:
+                tag_ids = await get_image_tags(self.request.app, image_id)
+                return web.json_response({
+                    "id": image_id,
+                    "name": image["name"],
+                    "source_path": image["source_path"],
+                    "tags": [{"id": tag["tag_id"], "name": tag["name"]} for tag in tag_ids]
+                }, status=200)
+            return web.json_response({}, status=404)
+        except Exception as err:
+            return web.json_response({"error": "Invalid token"}, status=400)
+
+
+class Images(PydanticView):
+    async def get(self, /, page: int, size: int):
+        try:
+            count = await get_image_count(self.request.app)
+            images = await get_images_page(self.request.app, page, size)
+            result = []
+            for i_id, i_name, i_source in images:
+                tag_ids = await get_image_tags(self.request.app, i_id)
+                result.append({
+                    "id": i_id,
+                    "name": i_name,
+                    "source_path": i_source,
+                    "tags": [{"id": tag["tag_id"], "name": tag["name"]} for tag in tag_ids]
+                })
+            return web.json_response({"images": result, "count": count}, status=200)
+        except Exception as err:
+            return web.json_response({"error": "Invalid token"}, status=400)

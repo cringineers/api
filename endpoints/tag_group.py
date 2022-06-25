@@ -19,10 +19,35 @@ class TagGroup(PydanticView):
     async def get(self, group_id: int):
         try:
             group = await get_tag_group(self.request.app, group_id)
+            if group is not None:
+                tags = await get_tags_by_group(self.request.app, group_id)
+                return web.json_response({
+                    "group": {
+                        "id": group_id,
+                        "name": group["name"],
+                        "binary": group["binary"],
+                    },
+                    "tags": [{"id": tag["id"],
+                              "name": tag["name"],
+                              "text": tag["text"],
+                              "latent_space": tag["latent_space"]
+                              } for tag in tags]
+                }, status=200)
+            else:
+                return web.json_response({}, status=404)
+        except Exception as err:
+            web.json_response({"Error": err}, status=500)
+
+
+class TagGroups(PydanticView):
+    async def get(self):
+        try:
+            """
+            group = await get_tag_group(self.request.app, group_id)
             tags = await get_tags_by_group(self.request.app, group_id)
             return web.json_response({
                 "group": {
-                    "id": group_id,
+                    "id": group[],
                     "name": group["name"],
                     "binary": group["binary"],
                 },
@@ -32,5 +57,6 @@ class TagGroup(PydanticView):
                           "latent_space": tag["latent_space"]
                           } for tag in tags]
             }, status=200)
+            """
         except Exception as err:
             web.json_response({"Error": err}, status=500)

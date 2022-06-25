@@ -29,12 +29,22 @@ class Tag(PydanticView):
     async def get(self, /, tag_id: int):
         try:
             tag = await get_tag(self.request.app, tag_id)
-            return web.json_response({
-                "id": tag["id"],
-                "name": tag["name"],
-                "text": tag["text"],
-                "latent_space": tag["latent_space"]
-            }, status=200)
+            if tag is not None:
+                return web.json_response({
+                    "id": tag["id"],
+                    "name": tag["name"],
+                    "text": tag["text"],
+                    "latent_space": tag["latent_space"]
+                }, status=200)
+            return web.json_response({}, status=404)
         except Exception as err:
             web.json_response({"Error": err}, status=500)
 
+
+class TagDeleter(PydanticView):
+    async def post(self, /, tag_id: int):
+        try:
+            await delete_tag(self.request.app, tag_id)
+            return web.json_response({"status": "Done"}, status=200)
+        except Exception as err:
+            web.json_response({"Error": err}, status=500)
