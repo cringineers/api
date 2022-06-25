@@ -11,4 +11,4 @@ pyjwt~=2.3.0
 boto3~=1.24.17
 botocore~=1.27.17
 requests~=2.26.0
-zlib~=1.2.11
+aiohttp_middlewares~=1.2.1
