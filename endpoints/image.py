@@ -1,6 +1,5 @@
 import requests
 import json
-import jwt
 import db.minio as minio
 from aiohttp import web
 from aiohttp_pydantic import PydanticView
@@ -12,11 +11,6 @@ class Image(PydanticView):
     # Upload image
     async def post(self, /, name: str, *, authorization: str, content_type: str = "image/jpeg"):
         try:
-            '''
-            _ = jwt.decode(authorization.split()[1],
-                           key=self.request.app["jwt_key"],
-                           algorithm=self.request.app["jwt_alg"])
-            '''
             image = await self.request.read()
             prediction = requests.post(f"{self.request.app['worker_host']}/features_image", data=image).json()["features"]
             minio.upload_image(self.request.app, image, name, content_type)
@@ -92,5 +86,4 @@ class ImageDeleter(PydanticView):
             await delete_image(self.request.app, image_id)
             return web.json_response({"status": "Done"}, status=200)
         except Exception as err:
-            raise err
             return web.json_response({"error": "Invalid token"}, status=400)

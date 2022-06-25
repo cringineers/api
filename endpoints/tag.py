@@ -1,6 +1,5 @@
 import json
 import requests
-from typing import List, Dict
 from aiohttp import web
 from aiohttp_pydantic import PydanticView
 from db.db_tag import *
