@@ -25,5 +25,5 @@ async def add_tags(app: Application, image_id, tag_ids):
         query = text("""
             insert into tag_system.object_tags(object_id, tag_id) values(:obj, :tag)
         """)
-        await connection.execute_many(query, [{"obj": image_id, "tag": tag_id} for tag_id in tag_ids])
+        await connection.execute(query, [{"obj": image_id, "tag": tag_id} for tag_id in tag_ids])
         await connection.commit()

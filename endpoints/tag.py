@@ -7,6 +7,7 @@ from db.db_tag import *
 
 
 class Tag(PydanticView):
+    # Upload tag
     async def post(self):
         try:
             body = await self.request.json()

@@ -6,8 +6,8 @@ async def get_all(app: Application):
     engine = app["db_engine"]
     async with engine.connect() as connection:
         query = text("""
-            select g.id, g.name, g.binary, t.id, t.name, t.text t.latent_space, t.is_fake 
-            from tag_system.tag_group as g left join tag_system.tag as t on t.group_id = g.id
+            select g.id, g.name, g.binary, t.id, t.name, t.text, t.latent_space, t.is_fake 
+            from tag_system.tag_group as g left join tag_system.tags as t on t.group_id = g.id
         """)
         group = await connection.execute(query)
         await connection.commit()

@@ -5,13 +5,14 @@ from db.db_tag import get_tags_by_group
 
 
 class TagGroup(PydanticView):
+    # Upload tag group
     async def post(self):
         try:
             body = await self.request.json()
             name = body["name"]
             binary = body["binary"]
             group_id = await insert_tag_group(self.request.app, name, binary)
-            return web.json_response({"group_id": group_id}, status=400)
+            return web.json_response({"group_id": group_id}, status=200)
         except Exception as err:
             return web.json_response({"Error": err}, status=500)
 
