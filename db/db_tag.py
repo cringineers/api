@@ -10,7 +10,7 @@ async def get_tag(app: Application, tag_id):
         """)
         tags = await connection.execute(query, {"id": tag_id})
         await connection.commit()
-    return tags
+    return tags.fetchone()
 
 
 async def insert_tag(app: Application, name, tag_text, latent_space, group_id, fake):
@@ -37,7 +37,7 @@ async def get_tags_by_group(app: Application, group_id):
         """)
         tags = await connection.execute(query, {"id": group_id})
         await connection.commit()
-    return tags
+    return tags.fetchall()
 
 
 async def create_tag(app: Application, name, tag_text, latent_space, group_id):

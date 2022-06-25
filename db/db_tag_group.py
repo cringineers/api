@@ -33,7 +33,7 @@ async def get_tag_group(app: Application, group_id):
         """)
         group = await connection.execute(query, {"id": group_id})
         await connection.commit()
-    return group
+    return group.fetchone()
 
 
 async def create_tag_group(app: Application, name, binary):
@@ -45,17 +45,6 @@ async def create_tag_group(app: Application, name, binary):
         result = await connection.execute(query, {"name": name, "bin": binary})
         await connection.commit()
     return result.inserted_primary_key
-
-
-async def update_tag_group(app: Application, group_id, name):
-    engine = app["db_engine"]
-    async with engine.connect() as connection:
-        query = text("""
-            update tag_system.tag_group set name = :name where id = :id
-        """)
-        await connection.execute(query, {"name": name, "id": group_id})
-        await connection.commit()
-    return group_id
 
 
 async def delete_tag_group(app: Application, group_id):
