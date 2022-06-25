@@ -152,4 +152,4 @@ CREATE TABLE tag_system.object_tags (
 
 
 INSERT INTO tag_system.users (login, hash)
-VALUES ('cool_user', '$2b$12$vjUOaUTtj9QDmBnKZ3UO6O01tQnAYOnHnmo.u.xkWFdvLeonOcTv6')
+VALUES ('cool_user', '$pbkdf2-sha256$29000$c06JMSbkHIPwfm.NkdIa4w$t9E4f6O/LJPkA0u4Tlfm.QURoDeOuFZzx65lkvOYVUc')
