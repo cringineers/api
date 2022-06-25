@@ -58,7 +58,7 @@ async def get_image_tags(app: Application, image_id):
 # TODO: FIX PAGINATION
 async def get_images_page(app: Application, page, size):
     engine = app["db_engine"]
-    limit = size * (page + 1)
+    limit = size
     offset = size * page
     async with engine.connect() as connection:
         query = text("""
@@ -99,6 +99,7 @@ async def get_images_search_all(app: Application, tags):
         result = await connection.execute(query, {"tags": tags})
         await connection.commit()
     return result.fetchall()
+
 
 async def get_images_by_ids(app: Application, ids):
     engine = app["db_engine"]
