@@ -1,6 +1,7 @@
 import requests
 import json
 import db.minio as minio
+from zlib import decompress
 from aiohttp import web
 from aiohttp_pydantic import PydanticView
 from db.db_image import insert_image, add_tags, get_image, get_image_tags, get_images_page, get_image_count, delete_image
@@ -11,8 +12,9 @@ class Image(PydanticView):
     # Upload image
     async def post(self, /, name: str, *, authorization: str, content_type: str = "image/jpeg"):
         try:
-            image = await self.request.read()
-            prediction = requests.post(f"{self.request.app['worker_host']}/features_image", data=image).json()["features"]
+            image_compressed = await self.request.read()
+            image = decompress(image_compressed)
+            prediction = requests.post(f"{self.request.app['worker_host']}/features_image", data=image_compressed).json()["features"]
             minio.upload_image(self.request.app, image, name, content_type)
             image_id = await insert_image(self.request.app, name, prediction)
             groups = await get_all(self.request.app)
