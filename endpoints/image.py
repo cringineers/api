@@ -11,7 +11,7 @@ from db.db_tag_group import get_all
 
 class Image(PydanticView):
     # Upload image
-    async def post(self, /, name: str, *, authorization: str, content_type: str = "image/jpeg"):
+    async def post(self, /, name: str, *, content_type: str = "image/jpeg"):
         try:
             image_compressed = await self.request.read()
             image = decompress(image_compressed)
@@ -63,10 +63,10 @@ class Image(PydanticView):
 
 
 class Images(PydanticView):
-    async def get(self, /, page: int, size: int):
+    async def get(self, /, page: int, size: int, order: str = "new"):
         try:
             count = await get_image_count(self.request.app)
-            images = await get_images_page(self.request.app, page, size)
+            images = await get_images_page(self.request.app, page, size, order)
             result = []
             for i_id, i_name, i_source in images:
                 tag_ids = await get_image_tags(self.request.app, i_id)
@@ -82,14 +82,14 @@ class Images(PydanticView):
 
 
 class ImagesSearch(PydanticView):
-    async def get(self, /, page: int, size: int, tags: List[int], type: str = "any"):
+    async def get(self, /, page: int, size: int, tags: List[int], type: str = "any", order: str = "new"):
         try:
             if type == "any":
-                image_ids = await get_images_search(self.request.app, tags)
+                image_ids = await get_images_search(self.request.app, tags, order)
                 count = len(image_ids)
                 image_ids = image_ids[page * size:(page + 1) * size]
             else:
-                data = await get_images_search_all(self.request.app, tags)
+                data = await get_images_search_all(self.request.app, tags, order)
                 resource = {}
                 for i_id, t_id in data:
                     if i_id in resource.keys():

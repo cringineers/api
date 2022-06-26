@@ -56,15 +56,16 @@ async def get_image_tags(app: Application, image_id):
 
 
 # TODO: FIX PAGINATION
-async def get_images_page(app: Application, page, size):
+async def get_images_page(app: Application, page, size, order):
     engine = app["db_engine"]
     limit = size
     offset = size * page
+    order = "DESC" if order == "new" else ""
     async with engine.connect() as connection:
-        query = text("""
+        query = text(f"""
             select id, name, source_path 
             from tag_system.objects 
-            order by id
+            order by id {order}
             limit :limit offset :offset
         """)
         result = await connection.execute(query, {"limit": limit, "offset": offset})
@@ -73,29 +74,31 @@ async def get_images_page(app: Application, page, size):
 
 
 # TODO: FIX PAGINATION
-async def get_images_search(app: Application, tags):
+async def get_images_search(app: Application, tags, order):
     engine = app["db_engine"]
+    order = "DESC" if order == "new" else ""
     async with engine.connect() as connection:
         query = text("""
             SELECT distinct object_id
             from tag_system.object_tags
             where tag_id = any (:tags)
             order by object_id
-        """)
+        """ + order)
         result = await connection.execute(query, {"tags": tags})
         await connection.commit()
     return result.fetchall()
 
 
-async def get_images_search_all(app: Application, tags):
+async def get_images_search_all(app: Application, tags, order):
     engine = app["db_engine"]
+    order = "DESC" if order == "new" else ""
     async with engine.connect() as connection:
         query = text("""
             SELECT distinct object_id, tag_id
             from tag_system.object_tags
             where tag_id = any (:tags)
             order by object_id
-        """)
+        """ + order)
         result = await connection.execute(query, {"tags": tags})
         await connection.commit()
     return result.fetchall()

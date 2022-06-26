@@ -60,3 +60,13 @@ async def delete_tag(app: Application, tag_id):
         """)
         await connection.execute(query, {"id": tag_id})
         await connection.commit()
+
+
+async def clear_tags(app: Application):
+    engine = app["db_engine"]
+    async with engine.connect() as connection:
+        query = text("""
+            delete from tag_system.tags 
+        """)
+        await connection.execute(query)
+        await connection.commit()
