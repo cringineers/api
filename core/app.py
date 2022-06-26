@@ -15,8 +15,7 @@ async def create_app():
 
     app = Application(middlewares=[
         cors_middleware(
-            allow_all=True,
-            allow_methods=["POST", "GET"]
+            allow_all=True
         ),
     ])
     app = setup_routes(app)
